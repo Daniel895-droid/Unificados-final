@@ -1,0 +1,1987 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="UNIANEST">
+    <meta name="theme-color" content="#0f766e">
+    <title>UNIANEST - Avaliação Pré-Anestésica</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root{--primary:#0f766e;--primary-light:#14b8a6;--primary-dark:#0d5d56;--primary-bg:#f0fdfa;--danger:#ef4444;--danger-light:#fef2f2;--success:#22c55e;--success-light:#f0fdf4;--warning:#f59e0b;--warning-light:#fffbeb;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-300:#d1d5db;--gray-400:#9ca3af;--gray-500:#6b7280;--gray-600:#4b5563;--gray-700:#374151;--gray-800:#1f2937;--white:#fff;--shadow:0 1px 3px rgba(0,0,0,.1);--shadow-md:0 4px 6px -1px rgba(0,0,0,.1);--shadow-lg:0 10px 15px -3px rgba(0,0,0,.1);--radius:12px;--radius-sm:8px;--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+        html,body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--gray-100);color:var(--gray-800);line-height:1.5;-webkit-font-smoothing:antialiased}
+        body{padding-top:var(--safe-top);padding-bottom:calc(80px + var(--safe-bottom))}
+
+```
+    /* ========== SPLASH SCREEN ========== */
+    .splash{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background:#0f766e;background:-webkit-linear-gradient(315deg,#0f766e 0%,#0d5d56 50%,#064e3b 100%);background:linear-gradient(135deg,#0f766e 0%,#0d5d56 50%,#064e3b 100%);display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;z-index:9999}
+    .splash.hidden{opacity:0;visibility:hidden;pointer-events:none;-webkit-transition:opacity .5s,visibility .5s;transition:opacity .5s,visibility .5s}
+    .splash-logo{width:180px;height:180px;background:rgba(255,255,255,0.15);border-radius:40px;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;margin-bottom:30px;box-shadow:0 20px 60px rgba(0,0,0,0.3);border:2px solid rgba(255,255,255,0.2)}
+    .splash-icon{font-size:80px}
+    .splash-title{font-size:2.5rem;font-weight:800;color:#ffffff;letter-spacing:2px;margin-bottom:8px;text-shadow:0 4px 20px rgba(0,0,0,0.3)}
+    .splash-subtitle{font-size:1rem;color:rgba(255,255,255,0.8);margin-bottom:50px;text-align:center;padding:0 20px}
+    .splash-btn{padding:16px 60px;background:#ffffff;color:#0d5d56;font-size:1.125rem;font-weight:700;border:none;border-radius:50px;cursor:pointer;box-shadow:0 10px 40px rgba(0,0,0,0.3);-webkit-transition:transform .2s,box-shadow .2s;transition:transform .2s,box-shadow .2s;letter-spacing:1px}
+    .splash-btn:active{-webkit-transform:scale(0.95);transform:scale(0.95);box-shadow:0 5px 20px rgba(0,0,0,0.3)}
+    .splash-version{position:absolute;bottom:30px;color:rgba(255,255,255,0.5);font-size:.75rem}
+
+    /* ========== HEADER ========== */
+    .header{position:fixed;top:0;left:0;right:0;z-index:100;background:linear-gradient(135deg,var(--primary),var(--primary-dark));padding:calc(var(--safe-top) + 10px) 16px 10px;color:var(--white);box-shadow:var(--shadow-lg)}
+    .header-content{display:flex;align-items:center;justify-content:space-between;max-width:800px;margin:0 auto}
+    .header h1{font-size:1.125rem;font-weight:700}
+    .header-btns{display:flex;gap:8px}
+    .header-btn{width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,.15);color:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer}
+    .header-btn:active{background:rgba(255,255,255,.25)}
+
+    /* ========== TABS ========== */
+    .tabs{display:flex;background:var(--white);border-bottom:1px solid var(--gray-200);position:fixed;top:calc(58px + var(--safe-top));left:0;right:0;z-index:99}
+    .tab{flex:1;padding:12px;text-align:center;font-size:.875rem;font-weight:600;color:var(--gray-500);cursor:pointer;border-bottom:3px solid transparent;transition:all .2s}
+    .tab.active{color:var(--primary);border-bottom-color:var(--primary);background:var(--primary-bg)}
+
+    /* ========== MAIN ========== */
+    .main{padding:calc(110px + var(--safe-top)) 12px 20px;max-width:800px;margin:0 auto;display:none}
+    .main.active{display:block}
+    
+    /* Esconder app enquanto splash está visível */
+    .app-hidden{display:none!important}
+
+    /* ========== LISTA DE PACIENTES ========== */
+    .lista-container{padding:calc(110px + var(--safe-top)) 12px 20px;max-width:800px;margin:0 auto;display:none}
+    .lista-container.active{display:block}
+    .search-box{position:relative;margin-bottom:16px}
+    .search-input{width:100%;padding:14px 14px 14px 48px;border:2px solid var(--gray-200);border-radius:var(--radius);font-size:1rem;font-family:inherit;background:var(--white)}
+    .search-input:focus{outline:none;border-color:var(--primary)}
+    .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--gray-400)}
+    .lista-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:0 4px}
+    .lista-count{font-size:.875rem;color:var(--gray-500)}
+    .lista-empty{text-align:center;padding:60px 20px;color:var(--gray-400)}
+    .lista-empty-icon{font-size:4rem;margin-bottom:16px;opacity:.5}
+    .lista-empty-text{font-size:1rem;margin-bottom:8px}
+    .lista-empty-sub{font-size:.875rem}
+    .paciente-card{background:var(--white);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);border:1px solid var(--gray-200);cursor:pointer;transition:all .2s}
+    .paciente-card:active{transform:scale(.98);background:var(--gray-50)}
+    .paciente-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+    .paciente-nome{font-size:1rem;font-weight:600;color:var(--gray-800)}
+    .paciente-asa{padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:700;background:var(--primary-bg);color:var(--primary)}
+    .paciente-info{display:flex;flex-wrap:wrap;gap:12px;font-size:.8125rem;color:var(--gray-500)}
+    .paciente-info span{display:flex;align-items:center;gap:4px}
+    .paciente-status{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:600;margin-top:8px}
+    .paciente-status.liberado{background:var(--success-light);color:var(--success)}
+    .paciente-status.reavaliacao{background:var(--warning-light);color:var(--warning)}
+    .paciente-status.suspenso{background:var(--danger-light);color:var(--danger)}
+    .paciente-actions{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--gray-100)}
+    .paciente-action{flex:1;padding:10px;border:none;border-radius:var(--radius-sm);font-size:.8125rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+    .paciente-action.edit{background:var(--primary-bg);color:var(--primary)}
+    .paciente-action.pdf{background:var(--gray-100);color:var(--gray-700)}
+    .paciente-action.delete{background:var(--danger-light);color:var(--danger)}
+
+    /* ========== FORM STYLES ========== */
+    .progress-container{background:var(--white);border-radius:var(--radius);padding:16px;margin-bottom:16px;box-shadow:var(--shadow)}
+    .progress-header{display:flex;justify-content:space-between;margin-bottom:10px}
+    .progress-label{font-size:.875rem;font-weight:600;color:var(--gray-700)}
+    .progress-percent{font-size:.875rem;font-weight:700;color:var(--primary)}
+    .progress-bar{height:8px;background:var(--gray-200);border-radius:4px;overflow:hidden}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-light));border-radius:4px;transition:width .4s;width:0}
+    .progress-steps{display:flex;gap:4px;margin-top:12px}
+    .progress-step{flex:1;height:4px;background:var(--gray-200);border-radius:2px}
+    .progress-step.completed{background:var(--primary)}
+    .section{background:var(--white);border-radius:16px;margin-bottom:16px;box-shadow:var(--shadow);overflow:hidden;border:1px solid var(--gray-200)}
+    .section-header{display:flex;align-items:center;justify-content:space-between;padding:16px;background:linear-gradient(135deg,var(--primary-bg),var(--white));border-bottom:1px solid var(--gray-200);cursor:pointer}
+    .section-title-group{display:flex;align-items:center;gap:12px}
+    .section-number{width:32px;height:32px;border-radius:50%;background:var(--primary);color:var(--white);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.875rem}
+    .section-number.completed{background:var(--success)}
+    .section-title{font-size:1rem;font-weight:600}
+    .section-chevron{width:24px;height:24px;color:var(--gray-400);transition:transform .3s}
+    .section.expanded .section-chevron{transform:rotate(180deg)}
+    .section-content{display:none;padding:16px}
+    .section.expanded .section-content{display:block;animation:slideDown .3s ease}
+    @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+    .form-group{margin-bottom:16px}
+    .form-label{display:block;font-size:.875rem;font-weight:600;color:var(--gray-700);margin-bottom:6px}
+    .form-label.required::after{content:' *';color:var(--danger)}
+    .form-input{width:100%;padding:12px 14px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);font-size:1rem;font-family:inherit;color:var(--gray-800);background:var(--white);transition:all .2s}
+    .form-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(15,118,110,.1)}
+    .form-input::placeholder{color:var(--gray-400)}
+    .form-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .form-row-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .checkbox-group{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+    .checkbox-item{position:relative}
+    .checkbox-item input{position:absolute;opacity:0;width:0;height:0}
+    .checkbox-label{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--gray-50);border:2px solid var(--gray-200);border-radius:var(--radius-sm);font-size:.875rem;font-weight:500;color:var(--gray-700);cursor:pointer;transition:all .2s}
+    .checkbox-item input:checked+.checkbox-label{background:var(--primary-bg);border-color:var(--primary);color:var(--primary-dark)}
+    .checkbox-box{width:20px;height:20px;border:2px solid var(--gray-300);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .checkbox-item input:checked+.checkbox-label .checkbox-box{background:var(--primary);border-color:var(--primary)}
+    .checkbox-box svg{width:12px;height:12px;color:var(--white);opacity:0}
+    .checkbox-item input:checked+.checkbox-label .checkbox-box svg{opacity:1}
+    .radio-group{display:flex;flex-wrap:wrap;gap:8px}
+    .radio-item{position:relative}
+    .radio-item input{position:absolute;opacity:0;width:0;height:0}
+    .radio-label{display:flex;align-items:center;justify-content:center;padding:10px 16px;background:var(--gray-50);border:2px solid var(--gray-200);border-radius:var(--radius-sm);font-size:.875rem;font-weight:500;color:var(--gray-700);cursor:pointer;transition:all .2s;min-width:60px}
+    .radio-item input:checked+.radio-label{background:var(--primary);border-color:var(--primary);color:var(--white)}
+    .toggle-group{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--gray-100)}
+    .toggle-group:last-child{border-bottom:none}
+    .toggle-label{font-size:.9375rem;color:var(--gray-700);font-weight:500}
+    .toggle{position:relative;width:52px;height:28px}
+    .toggle input{opacity:0;width:0;height:0}
+    .toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--gray-300);border-radius:28px;transition:all .3s}
+    .toggle-slider::before{content:'';position:absolute;width:22px;height:22px;left:3px;bottom:3px;background:var(--white);border-radius:50%;transition:all .3s}
+    .toggle input:checked+.toggle-slider{background:var(--primary)}
+    .toggle input:checked+.toggle-slider::before{transform:translateX(24px)}
+    .subsection{background:var(--gray-50);border-radius:var(--radius-sm);padding:14px;margin-bottom:12px;border:1px solid var(--gray-200)}
+    .subsection-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .subsection-title{font-size:.9375rem;font-weight:600;color:var(--primary-dark)}
+    .sem-alteracao{padding:6px 12px;background:var(--success-light);border:2px solid var(--success);border-radius:var(--radius-sm);font-size:.8125rem;font-weight:600;color:var(--success);cursor:pointer}
+    .sem-alteracao.active{background:var(--success);color:var(--white)}
+    .conditional-field{display:none;margin-top:10px;padding-top:10px;border-top:1px dashed var(--gray-300)}
+    .conditional-field.visible{display:block}
+    .mallampati-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}
+    .mallampati-item{position:relative}
+    .mallampati-item input{position:absolute;opacity:0;width:0;height:0}
+    .mallampati-label{display:flex;flex-direction:column;align-items:center;padding:12px 8px;background:var(--gray-50);border:2px solid var(--gray-200);border-radius:var(--radius-sm);cursor:pointer}
+    .mallampati-item input:checked+.mallampati-label{background:var(--primary-bg);border-color:var(--primary)}
+    .mallampati-icon{width:48px;height:48px;margin-bottom:8px;background:var(--gray-200);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700}
+    .mallampati-item input:checked+.mallampati-label .mallampati-icon{background:var(--primary);color:var(--white)}
+    .mallampati-text{font-size:.875rem;font-weight:600;color:var(--gray-700)}
+    .asa-grid{display:grid;gap:8px}
+    .asa-item{position:relative}
+    .asa-item input{position:absolute;opacity:0;width:0;height:0}
+    .asa-label{display:flex;align-items:center;gap:12px;padding:14px;background:var(--gray-50);border:2px solid var(--gray-200);border-radius:var(--radius-sm);cursor:pointer}
+    .asa-item input:checked+.asa-label{background:var(--primary-bg);border-color:var(--primary)}
+    .asa-number{width:36px;height:36px;border-radius:50%;background:var(--gray-200);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;color:var(--gray-600);flex-shrink:0}
+    .asa-item input:checked+.asa-label .asa-number{background:var(--primary);color:var(--white)}
+    .asa-text{font-size:.875rem;color:var(--gray-700)}
+    .asa-text strong{display:block;font-weight:600;margin-bottom:2px}
+    .exame-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--gray-100)}
+    .exame-item:last-child{border-bottom:none}
+    .exame-name{font-size:.9375rem;font-weight:500;color:var(--gray-700)}
+    .exame-options{display:flex;gap:6px}
+    .exame-btn{padding:6px 12px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);background:var(--gray-50);font-size:.8125rem;font-weight:600;color:var(--gray-600);cursor:pointer}
+    .exame-btn.normal.active{background:var(--success);border-color:var(--success);color:var(--white)}
+    .exame-btn.alterado.active{background:var(--warning);border-color:var(--warning);color:var(--white)}
+    .obs-field{margin-top:8px;display:none}
+    .obs-field.visible{display:block}
+    .obs-input{width:100%;padding:10px 12px;border:2px solid var(--warning);border-radius:var(--radius-sm);font-size:.875rem;font-family:inherit;background:var(--warning-light);resize:none}
+    .score-display{display:none;align-items:center;gap:12px;padding:14px;background:linear-gradient(135deg,var(--primary-bg),var(--white));border-radius:var(--radius-sm);border:2px solid var(--primary);margin-top:12px}
+    .score-display.visible{display:flex}
+    .score-value{font-size:2rem;font-weight:700;color:var(--primary)}
+    .score-label{font-size:.875rem;color:var(--gray-600)}
+    .score-label strong{display:block;font-size:1rem;color:var(--gray-800)}
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--gray-200);padding:12px 16px calc(12px + var(--safe-bottom));display:flex;gap:12px;box-shadow:0 -4px 12px rgba(0,0,0,.1)}
+    .nav-btn{flex:1;padding:14px;border-radius:var(--radius-sm);font-size:.9375rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;border:none}
+    .nav-btn.secondary{background:var(--gray-100);color:var(--gray-700)}
+    .nav-btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:var(--white);box-shadow:var(--shadow-md)}
+    .nav-btn svg{width:20px;height:20px}
+    .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--gray-800);color:var(--white);padding:14px 24px;border-radius:var(--radius);font-size:.9375rem;font-weight:500;box-shadow:var(--shadow-lg);opacity:0;transition:all .3s ease;z-index:200}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+    .toast.success{background:var(--success)}
+    .toast.error{background:var(--danger)}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:20px;z-index:300;opacity:0;visibility:hidden;transition:all .3s}
+    .modal-overlay.show{opacity:1;visibility:visible}
+    .modal{background:var(--white);border-radius:16px;width:100%;max-width:400px;transform:scale(.9);transition:transform .3s}
+    .modal-overlay.show .modal{transform:scale(1)}
+    .modal-header{padding:20px;border-bottom:1px solid var(--gray-200)}
+    .modal-title{font-size:1.125rem;font-weight:700}
+    .modal-body{padding:20px}
+    .modal-footer{padding:16px 20px;border-top:1px solid var(--gray-200);display:flex;gap:12px}
+    .modal-btn{flex:1;padding:12px;border-radius:var(--radius-sm);font-size:.9375rem;font-weight:600;cursor:pointer;border:none}
+    .modal-btn.cancel{background:var(--gray-100);color:var(--gray-700)}
+    .modal-btn.confirm{background:var(--primary);color:var(--white)}
+    .modal-btn.danger{background:var(--danger);color:var(--white)}
+    .mb-0{margin-bottom:0!important}
+    .mt-12{margin-top:12px}
+    @media(min-width:768px){.form-row{grid-template-columns:repeat(3,1fr)}.form-row-3{grid-template-columns:repeat(4,1fr)}}
+</style>
+```
+
+</head>
+<body>
+    <!-- SPLASH SCREEN -->
+    <div class="splash" id="splash" style="position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background:#0f766e;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;">
+        <div class="splash-logo">
+            <span class="splash-icon">🏥</span>
+        </div>
+        <h1 class="splash-title">UNIANEST</h1>
+        <p class="splash-subtitle">Sistema de Avaliação Pré-Anestésica<br>Unirio</p>
+        <button class="splash-btn" onclick="entrarApp()">ENTRAR</button>
+        <span class="splash-version">v1.0.0</span>
+    </div>
+
+```
+<!-- HEADER -->
+<header class="header" id="appHeader" style="display:none">
+    <div class="header-content">
+        <div style="display:flex;align-items:center;gap:10px">
+            <button class="header-btn" onclick="sairParaMenu()" title="Voltar ao Menu" style="background:rgba(255,255,255,.25)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </button>
+            <h1>UNIANEST</h1>
+        </div>
+        <div class="header-btns">
+            <button class="header-btn" onclick="exportarPDF()" title="Exportar PDF">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            </button>
+            <button class="header-btn" onclick="novoFormulario()" title="Nova Avaliação">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- TABS -->
+<div class="tabs" id="appTabs" style="display:none">
+    <div class="tab active" onclick="showTab('form')">Formulário</div>
+    <div class="tab" onclick="showTab('lista')">Pacientes</div>
+</div>
+
+<!-- LISTA DE PACIENTES -->
+<div class="lista-container" id="listaContainer">
+    <div class="search-box">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="Buscar por nome ou prontuário..." oninput="filtrarLista()">
+    </div>
+    <div class="lista-info">
+        <span class="lista-count" id="listaCount">0 pacientes</span>
+    </div>
+    <div id="listaContent"></div>
+</div>
+
+<!-- FORMULÁRIO -->
+<main class="main app-hidden" id="formContainer">
+    <div class="progress-container">
+        <div class="progress-header">
+            <span class="progress-label">Progresso</span>
+            <span class="progress-percent" id="progressPercent">0%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-steps" id="progressSteps"></div>
+    </div>
+
+    <!-- SEÇÃO 1: IDENTIFICAÇÃO -->
+    <section class="section expanded" data-section="1">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title-group">
+                <span class="section-number">1</span>
+                <span class="section-title">Identificação do Paciente</span>
+            </div>
+            <svg class="section-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="section-content">
+            <div class="form-group">
+                <label class="form-label required">Nome Completo</label>
+                <input type="text" class="form-input" id="nome" placeholder="Nome do paciente">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Prontuário</label>
+                    <input type="text" class="form-input" id="prontuario" placeholder="Nº">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">CPF</label>
+                    <input type="text" class="form-input" id="cpf" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label required">Data Nascimento</label>
+                    <input type="date" class="form-input" id="dataNasc" onchange="calcIdade()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Idade</label>
+                    <input type="text" class="form-input" id="idade" placeholder="Auto" readonly>
+                </div>
+            </div>
+            <div class="form-group mb-0">
+                <label class="form-label required">Gênero</label>
+                <div class="radio-group">
+                    <label class="radio-item"><input type="radio" name="genero" value="M"><span class="radio-label">Masculino</span></label>
+                    <label class="radio-item"><input type="radio" name="genero" value="F"><span class="radio-label">Feminino</span></label>
+                    <label class="radio-item"><input type="radio" name="genero" value="O"><span class="radio-label">Outro</span></label>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO 2: PROCEDIMENTO -->
+    <section class="section" data-section="2">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title-group">
+                <span class="section-number">2</span>
+                <span class="section-title">Procedimento Proposto</span>
+            </div>
+            <svg class="section-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="section-content">
+            <div class="form-group">
+                <label class="form-label required">Cirurgia Proposta</label>
+                <input type="text" class="form-input" id="cirurgia" placeholder="Procedimento">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Diagnóstico</label>
+                <input type="text" class="form-input" id="diagnostico" placeholder="Diagnóstico">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Caráter</label>
+                <div class="radio-group">
+                    <label class="radio-item"><input type="radio" name="carater" value="E"><span class="radio-label">Eletiva</span></label>
+                    <label class="radio-item"><input type="radio" name="carater" value="U"><span class="radio-label">Urgência</span></label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Lateralidade</label>
+                <div class="radio-group">
+                    <label class="radio-item"><input type="radio" name="lat" value="D"><span class="radio-label">Direita</span></label>
+                    <label class="radio-item"><input type="radio" name="lat" value="E"><span class="radio-label">Esquerda</span></label>
+                    <label class="radio-item"><input type="radio" name="lat" value="B"><span class="radio-label">Bilateral</span></label>
+                    <label class="radio-item"><input type="radio" name="lat" value="NA"><span class="radio-label">N/A</span></label>
+                </div>
+            </div>
+            <div class="form-group mb-0">
+                <label class="form-label">Reoperação?</label>
+                <div class="radio-group">
+                    <label class="radio-item"><input type="radio" name="reop" value="S"><span class="radio-label">Sim</span></label>
+                    <label class="radio-item"><input type="radio" name="reop" value="N"><span class="radio-label">Não</span></label>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO 3: HPP -->
+    <section class="section" data-section="3">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title-group">
+                <span class="section-number">3</span>
+                <span class="section-title">História Patológica Pregressa</span>
+            </div>
+            <svg class="section-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="section-content">
+            <!-- Cardiovascular -->
+            <div class="subsection">
+                <div class="subsection-header">
+                    <span class="subsection-title">❤️ Cardiovascular</span>
+                    <button class="sem-alteracao" onclick="toggleSemAlt(this,'cardio')">Sem alteração</button>
+                </div>
+                <div class="checkbox-group" id="cardioGroup">
+                    <label class="checkbox-item"><input type="checkbox" name="cardio" value="HAS"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>HAS</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="cardio" value="Arritmia"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Arritmia</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="cardio" value="Coronariopatia"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Coronariopatia</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="cardio" value="Valvulopatia"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Valvulopatia</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="cardio" value="Marcapasso"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Marca-passo</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="cardio" value="IAM"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>IAM prévio</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="cardio" value="ICC"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>ICC</span></label>
+                </div>
+            </div>
+
+            <!-- Respiratório -->
+            <div class="subsection">
+                <div class="subsection-header">
+                    <span class="subsection-title">🫁 Respiratório</span>
+                    <button class="sem-alteracao" onclick="toggleSemAlt(this,'resp')">Sem alteração</button>
+                </div>
+                <div class="checkbox-group" id="respGroup">
+                    <label class="checkbox-item"><input type="checkbox" name="resp" value="Asma"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Asma</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="resp" value="DPOC"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>DPOC</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="resp" value="Apneia"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Apneia do sono</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="resp" value="O2"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Dependência O₂</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="resp" value="IVAS"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>IVAS recente</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="resp" value="Tosse"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Tosse</span></label>
+                </div>
+            </div>
+
+            <!-- Endócrino -->
+            <div class="subsection">
+                <div class="subsection-header">
+                    <span class="subsection-title">🔬 Endocrinológico</span>
+                    <button class="sem-alteracao" onclick="toggleSemAlt(this,'endo')">Sem alteração</button>
+                </div>
+                <div class="checkbox-group" id="endoGroup">
+                    <label class="checkbox-item"><input type="checkbox" name="endo" value="DM"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Diabetes</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="endo" value="Hipo"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Hipotireoidismo</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="endo" value="Hiper"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Hipertireoidismo</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="endo" value="Obesidade"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Obesidade</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="endo" value="Gravidez"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Gravidez</span></label>
+                </div>
+            </div>
+
+            <!-- GI/Hepático -->
+            <div class="subsection">
+                <div class="subsection-header">
+                    <span class="subsection-title">🍽️ GI/Hepático</span>
+                    <button class="sem-alteracao" onclick="toggleSemAlt(this,'gi')">Sem alteração</button>
+                </div>
+                <div class="checkbox-group" id="giGroup">
+                    <label class="checkbox-item"><input type="checkbox" name="gi" value="Refluxo"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Refluxo</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="gi" value="Gastrite"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Gastrite/Úlcera</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="gi" value="Vomito"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Vômito/Diarreia</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="gi" value="Cirrose"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Cirrose</span></label>
+                </div>
+            </div>
+
+            <!-- Neurológico -->
+            <div class="subsection">
+                <div class="subsection-header">
+                    <span class="subsection-title">🧠 Neurológico</span>
+                    <button class="sem-alteracao" onclick="toggleSemAlt(this,'neuro')">Sem alteração</button>
+                </div>
+                <div class="checkbox-group" id="neuroGroup">
+                    <label class="checkbox-item"><input type="checkbox" name="neuro" value="AVC"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>AVC</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="neuro" value="Convulsao"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Convulsão</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="neuro" value="Cefaleia"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Cefaleia</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="neuro" value="Dormencia"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Dormência/Fraqueza</span></label>
+                </div>
+            </div>
+
+            <!-- Renal -->
+            <div class="subsection">
+                <div class="subsection-header">
+                    <span class="subsection-title">🫘 Renal</span>
+                    <button class="sem-alteracao" onclick="toggleSemAlt(this,'renal')">Sem alteração</button>
+                </div>
+                <div class="checkbox-group" id="renalGroup">
+                    <label class="checkbox-item"><input type="checkbox" name="renal" value="IRC"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Insuf. renal</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="renal" value="Litiase"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Litíase</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="renal" value="Dialise"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Diálise</span></label>
+                </div>
+            </div>
+
+            <!-- Infeccioso -->
+            <div class="subsection">
+                <div class="subsection-header">
+                    <span class="subsection-title">🦠 Infeccioso</span>
+                    <button class="sem-alteracao" onclick="toggleSemAlt(this,'infec')">Negativo</button>
+                </div>
+                <div class="checkbox-group" id="infecGroup">
+                    <label class="checkbox-item"><input type="checkbox" name="infec" value="HIV"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>HIV</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="infec" value="HepB"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Hepatite B</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="infec" value="HepC"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Hepatite C</span></label>
+                </div>
+            </div>
+
+            <!-- Hematológico -->
+            <div class="subsection">
+                <div class="subsection-header">
+                    <span class="subsection-title">🩸 Hematológico</span>
+                    <button class="sem-alteracao" onclick="toggleSemAlt(this,'hemato')">Sem alteração</button>
+                </div>
+                <div class="checkbox-group" id="hematoGroup">
+                    <label class="checkbox-item"><input type="checkbox" name="hemato" value="Anemia"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Anemia</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="hemato" value="Plaquetopenia"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Plaquetopenia</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="hemato" value="Coagulopatia"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Coagulopatia</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="hemato" value="Transfusao"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Transfusão prévia</span></label>
+                </div>
+            </div>
+
+            <!-- Musculoesquelético -->
+            <div class="subsection">
+                <div class="subsection-header">
+                    <span class="subsection-title">🦴 Musculoesquelético</span>
+                    <button class="sem-alteracao" onclick="toggleSemAlt(this,'musculo')">Sem alteração</button>
+                </div>
+                <div class="checkbox-group" id="musculoGroup">
+                    <label class="checkbox-item"><input type="checkbox" name="musculo" value="Artrite"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Artrite</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="musculo" value="Lombalgia"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Dor lombar</span></label>
+                </div>
+            </div>
+
+            <!-- Câncer -->
+            <div class="subsection">
+                <div class="subsection-header">
+                    <span class="subsection-title">🎗️ Câncer</span>
+                    <button class="sem-alteracao" onclick="toggleSemAlt(this,'cancer')">Negativo</button>
+                </div>
+                <div class="checkbox-group" id="cancerGroup">
+                    <label class="checkbox-item"><input type="checkbox" name="cancer" value="Quimio"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Quimioterapia</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="cancer" value="Radio"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Radioterapia</span></label>
+                </div>
+            </div>
+
+            <!-- Alergias -->
+            <div class="subsection">
+                <div class="subsection-header">
+                    <span class="subsection-title">⚠️ Alergias</span>
+                </div>
+                <div class="radio-group" style="margin-bottom:10px">
+                    <label class="radio-item"><input type="radio" name="alergia" value="N" onchange="toggleCond('alergiaObs',false)"><span class="radio-label">Não</span></label>
+                    <label class="radio-item"><input type="radio" name="alergia" value="S" onchange="toggleCond('alergiaObs',true)"><span class="radio-label">Sim</span></label>
+                </div>
+                <div class="conditional-field" id="alergiaObs">
+                    <textarea class="form-input" rows="2" id="alergiaDesc" placeholder="Descrever alergias"></textarea>
+                </div>
+            </div>
+
+            <!-- Medicamentos -->
+            <div class="subsection">
+                <div class="subsection-header">
+                    <span class="subsection-title">💊 Medicamentos em Uso</span>
+                </div>
+                <div class="radio-group" style="margin-bottom:10px">
+                    <label class="radio-item"><input type="radio" name="med" value="N" onchange="toggleCond('medObs',false)"><span class="radio-label">Não</span></label>
+                    <label class="radio-item"><input type="radio" name="med" value="S" onchange="toggleCond('medObs',true)"><span class="radio-label">Sim</span></label>
+                </div>
+                <div class="conditional-field" id="medObs">
+                    <textarea class="form-input" rows="3" id="medDesc" placeholder="Listar medicamentos"></textarea>
+                </div>
+            </div>
+
+            <!-- Hábitos -->
+            <div class="subsection mb-0">
+                <div class="subsection-header">
+                    <span class="subsection-title">🚬 Hábitos Sociais</span>
+                </div>
+                <div class="checkbox-group">
+                    <label class="checkbox-item"><input type="checkbox" name="habitos" value="Alcool"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Álcool</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="habitos" value="Tabagismo" onchange="toggleCond('tabObs',this.checked)"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Tabagismo</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="habitos" value="ExTab"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Ex-tabagista</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="habitos" value="Drogas"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Drogas ilícitas</span></label>
+                </div>
+                <div class="conditional-field" id="tabObs">
+                    <input type="text" class="form-input" id="cargaTab" placeholder="Carga tabágica (maços/ano)">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO 4: EXAME FÍSICO -->
+    <section class="section" data-section="4">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title-group">
+                <span class="section-number">4</span>
+                <span class="section-title">Exame Físico</span>
+            </div>
+            <svg class="section-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="section-content">
+            <div class="subsection">
+                <div class="subsection-header"><span class="subsection-title">📊 Sinais Vitais</span></div>
+                <div class="form-row">
+                    <div class="form-group"><label class="form-label">Peso (kg)</label><input type="number" class="form-input" id="peso" placeholder="70" step="0.1" onchange="calcIMC()"></div>
+                    <div class="form-group"><label class="form-label">Altura (cm)</label><input type="number" class="form-input" id="altura" placeholder="170" onchange="calcIMC()"></div>
+                </div>
+                <div class="score-display" id="imcDisplay">
+                    <span class="score-value" id="imcValue">--</span>
+                    <span class="score-label"><strong>IMC</strong><span id="imcClass">kg/m²</span></span>
+                </div>
+                <div class="form-row mt-12">
+                    <div class="form-group"><label class="form-label">PAS (mmHg)</label><input type="number" class="form-input" id="pas" placeholder="120"></div>
+                    <div class="form-group"><label class="form-label">PAD (mmHg)</label><input type="number" class="form-input" id="pad" placeholder="80"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label class="form-label">FC (bpm)</label><input type="number" class="form-input" id="fc" placeholder="72"></div>
+                    <div class="form-group"><label class="form-label">SpO₂ (%)</label><input type="number" class="form-input" id="spo2" placeholder="98"></div>
+                    <div class="form-group"><label class="form-label">FR (irpm)</label><input type="number" class="form-input" id="fr" placeholder="16"></div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-header"><span class="subsection-title">🩺 Exame por Sistema</span></div>
+                <div class="exame-item"><span class="exame-name">ACV</span><div class="exame-options"><button class="exame-btn normal" onclick="setExame('acv','N',this)">Normal</button><button class="exame-btn alterado" onclick="setExame('acv','A',this)">Alterado</button></div></div>
+                <div class="obs-field" id="acvObs"><textarea class="obs-input" id="acvObsText" rows="2" placeholder="Descrever alterações"></textarea></div>
+                <div class="exame-item"><span class="exame-name">AR</span><div class="exame-options"><button class="exame-btn normal" onclick="setExame('ar','N',this)">Normal</button><button class="exame-btn alterado" onclick="setExame('ar','A',this)">Alterado</button></div></div>
+                <div class="obs-field" id="arObs"><textarea class="obs-input" id="arObsText" rows="2" placeholder="Descrever alterações"></textarea></div>
+                <div class="exame-item"><span class="exame-name">Abdominal</span><div class="exame-options"><button class="exame-btn normal" onclick="setExame('abd','N',this)">Normal</button><button class="exame-btn alterado" onclick="setExame('abd','A',this)">Alterado</button></div></div>
+                <div class="obs-field" id="abdObs"><textarea class="obs-input" id="abdObsText" rows="2" placeholder="Descrever alterações"></textarea></div>
+                <div class="exame-item"><span class="exame-name">Neurológico</span><div class="exame-options"><button class="exame-btn normal" onclick="setExame('neuroEx','N',this)">Normal</button><button class="exame-btn alterado" onclick="setExame('neuroEx','A',this)">Alterado</button></div></div>
+                <div class="obs-field" id="neuroExObs"><textarea class="obs-input" id="neuroExObsText" rows="2" placeholder="Descrever alterações"></textarea></div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-header"><span class="subsection-title">🫁 Via Aérea</span></div>
+                <div class="form-group">
+                    <label class="form-label">Mallampati</label>
+                    <div class="mallampati-grid">
+                        <label class="mallampati-item"><input type="radio" name="mallampati" value="1"><span class="mallampati-label"><span class="mallampati-icon">I</span><span class="mallampati-text">Classe I</span></span></label>
+                        <label class="mallampati-item"><input type="radio" name="mallampati" value="2"><span class="mallampati-label"><span class="mallampati-icon">II</span><span class="mallampati-text">Classe II</span></span></label>
+                        <label class="mallampati-item"><input type="radio" name="mallampati" value="3"><span class="mallampati-label"><span class="mallampati-icon">III</span><span class="mallampati-text">Classe III</span></span></label>
+                        <label class="mallampati-item"><input type="radio" name="mallampati" value="4"><span class="mallampati-label"><span class="mallampati-icon">IV</span><span class="mallampati-text">Classe IV</span></span></label>
+                    </div>
+                </div>
+                <div class="form-group"><label class="form-label">Dist. Interincisivos</label><div class="radio-group"><label class="radio-item"><input type="radio" name="interinc" value=">=3"><span class="radio-label">≥ 3 cm</span></label><label class="radio-item"><input type="radio" name="interinc" value="<3"><span class="radio-label">&lt; 3 cm</span></label></div></div>
+                <div class="form-group"><label class="form-label">Dist. Tireomentoniana</label><div class="radio-group"><label class="radio-item"><input type="radio" name="tireo" value=">6.5"><span class="radio-label">&gt; 6,5 cm</span></label><label class="radio-item"><input type="radio" name="tireo" value="<6.5"><span class="radio-label">&lt; 6,5 cm</span></label></div></div>
+                <div class="form-group"><label class="form-label">Protrusão Mandibular</label><div class="radio-group"><label class="radio-item"><input type="radio" name="protrusao" value="N"><span class="radio-label">Normal</span></label><label class="radio-item"><input type="radio" name="protrusao" value="L"><span class="radio-label">Limitada</span></label></div></div>
+                <div class="form-group"><label class="form-label">Mobilidade Cervical</label><div class="radio-group"><label class="radio-item"><input type="radio" name="mobCerv" value="N"><span class="radio-label">Normal</span></label><label class="radio-item"><input type="radio" name="mobCerv" value="D"><span class="radio-label">Diminuída</span></label></div></div>
+                <div class="form-group"><label class="form-label">Pescoço</label><div class="radio-group"><label class="radio-item"><input type="radio" name="pescoco" value="N"><span class="radio-label">Normal</span></label><label class="radio-item"><input type="radio" name="pescoco" value="L"><span class="radio-label">Largo</span></label><label class="radio-item"><input type="radio" name="pescoco" value="C"><span class="radio-label">Curto</span></label></div></div>
+                <div class="toggle-group"><span class="toggle-label">Desvio de traqueia?</span><label class="toggle"><input type="checkbox" id="desvioTraq"><span class="toggle-slider"></span></label></div>
+                <div class="toggle-group"><span class="toggle-label">Massa cervical/Bócio?</span><label class="toggle"><input type="checkbox" id="massaCerv"><span class="toggle-slider"></span></label></div>
+                <div class="toggle-group"><span class="toggle-label">Previsão de VAD?</span><label class="toggle"><input type="checkbox" id="vad"><span class="toggle-slider"></span></label></div>
+            </div>
+
+            <div class="subsection mb-0">
+                <div class="subsection-header"><span class="subsection-title">🦷 Dentição</span></div>
+                <div class="checkbox-group">
+                    <label class="checkbox-item"><input type="checkbox" name="denticao" value="Conservada"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Conservada</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="denticao" value="Ausente"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Ausente</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="denticao" value="MauEstado"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Mau estado</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="denticao" value="Protese" onchange="toggleCond('proteseObs',this.checked)"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Prótese</span></label>
+                </div>
+                <div class="conditional-field" id="proteseObs">
+                    <div class="radio-group">
+                        <label class="radio-item"><input type="radio" name="protese" value="T"><span class="radio-label">Total</span></label>
+                        <label class="radio-item"><input type="radio" name="protese" value="P"><span class="radio-label">Parcial</span></label>
+                        <label class="radio-item"><input type="radio" name="protese" value="F"><span class="radio-label">Fixa</span></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO 5: ANTECEDENTES -->
+    <section class="section" data-section="5">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title-group">
+                <span class="section-number">5</span>
+                <span class="section-title">Antecedentes Anestésico-Cirúrgicos</span>
+            </div>
+            <svg class="section-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="section-content">
+            <div class="form-group"><label class="form-label">Cirurgias Anteriores</label><textarea class="form-input" id="cirAnt" rows="3" placeholder="Descrever cirurgias anteriores"></textarea></div>
+            <div class="toggle-group"><span class="toggle-label">Histórico de IOT difícil?</span><label class="toggle"><input type="checkbox" id="iotDif"><span class="toggle-slider"></span></label></div>
+            <div class="toggle-group"><span class="toggle-label">Acesso venoso difícil?</span><label class="toggle"><input type="checkbox" id="avDif"><span class="toggle-slider"></span></label></div>
+            <div class="toggle-group"><span class="toggle-label">Reação adversa prévia?</span><label class="toggle"><input type="checkbox" id="reacaoAdv" onchange="toggleCond('reacaoObs',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="conditional-field" id="reacaoObs"><textarea class="form-input" rows="2" id="reacaoDesc" placeholder="Descrever reação"></textarea></div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO 6: ASA -->
+    <section class="section" data-section="6">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title-group">
+                <span class="section-number">6</span>
+                <span class="section-title">Classificação ASA</span>
+            </div>
+            <svg class="section-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="section-content">
+            <div class="asa-grid">
+                <label class="asa-item"><input type="radio" name="asa" value="1"><span class="asa-label"><span class="asa-number">I</span><span class="asa-text"><strong>ASA I</strong>Saudável</span></span></label>
+                <label class="asa-item"><input type="radio" name="asa" value="2"><span class="asa-label"><span class="asa-number">II</span><span class="asa-text"><strong>ASA II</strong>Doença leve/compensada</span></span></label>
+                <label class="asa-item"><input type="radio" name="asa" value="3"><span class="asa-label"><span class="asa-number">III</span><span class="asa-text"><strong>ASA III</strong>Doença grave</span></span></label>
+                <label class="asa-item"><input type="radio" name="asa" value="4"><span class="asa-label"><span class="asa-number">IV</span><span class="asa-text"><strong>ASA IV</strong>Ameaça constante à vida</span></span></label>
+                <label class="asa-item"><input type="radio" name="asa" value="5"><span class="asa-label"><span class="asa-number">V</span><span class="asa-text"><strong>ASA V</strong>Moribundo</span></span></label>
+                <label class="asa-item"><input type="radio" name="asa" value="6"><span class="asa-label"><span class="asa-number">VI</span><span class="asa-text"><strong>ASA VI</strong>Morte encefálica</span></span></label>
+            </div>
+            <div class="toggle-group mt-12"><span class="toggle-label">Emergência (E)?</span><label class="toggle"><input type="checkbox" id="asaE"><span class="toggle-slider"></span></label></div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO 7: EXAMES -->
+    <section class="section" data-section="7">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title-group">
+                <span class="section-number">7</span>
+                <span class="section-title">Exames Complementares</span>
+            </div>
+            <svg class="section-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="section-content">
+            <div class="subsection">
+                <div class="subsection-header"><span class="subsection-title">🧪 Laboratoriais</span></div>
+                <div class="form-row">
+                    <div class="form-group"><label class="form-label">Hb (g/dL)</label><input type="number" class="form-input" id="hb" step="0.1"></div>
+                    <div class="form-group"><label class="form-label">Ht (%)</label><input type="number" class="form-input" id="ht" step="0.1"></div>
+                    <div class="form-group"><label class="form-label">Plaquetas</label><input type="number" class="form-input" id="plaq"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label class="form-label">Ureia</label><input type="number" class="form-input" id="ureia"></div>
+                    <div class="form-group"><label class="form-label">Creatinina</label><input type="number" class="form-input" id="creat" step="0.01"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label class="form-label">Na⁺</label><input type="number" class="form-input" id="na"></div>
+                    <div class="form-group"><label class="form-label">K⁺</label><input type="number" class="form-input" id="k" step="0.1"></div>
+                    <div class="form-group"><label class="form-label">Glicemia</label><input type="number" class="form-input" id="glic"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label class="form-label">HbA1c (%)</label><input type="number" class="form-input" id="hba1c" step="0.1"></div>
+                    <div class="form-group"><label class="form-label">Coagulograma</label><div class="radio-group"><label class="radio-item"><input type="radio" name="coag" value="N"><span class="radio-label">Normal</span></label><label class="radio-item"><input type="radio" name="coag" value="A"><span class="radio-label">Alterado</span></label></div></div>
+                </div>
+            </div>
+
+            <div class="subsection mb-0">
+                <div class="subsection-header"><span class="subsection-title">📷 Imagem</span></div>
+                <div class="exame-item"><span class="exame-name">ECG</span><div class="exame-options"><button class="exame-btn normal" onclick="setExame('ecg','N',this)">Normal</button><button class="exame-btn alterado" onclick="setExame('ecg','A',this)">Alterado</button></div></div>
+                <div class="obs-field" id="ecgObs"><textarea class="obs-input" id="ecgObsText" rows="2" placeholder="Descrever alterações do ECG"></textarea></div>
+                <div class="exame-item"><span class="exame-name">Rx Tórax</span><div class="exame-options"><button class="exame-btn normal" onclick="setExame('rx','N',this)">Normal</button><button class="exame-btn alterado" onclick="setExame('rx','A',this)">Alterado</button></div></div>
+                <div class="obs-field" id="rxObs"><textarea class="obs-input" id="rxObsText" rows="2" placeholder="Descrever alterações do Rx"></textarea></div>
+                <div class="exame-item"><span class="exame-name">ECO TT</span><div class="exame-options"><button class="exame-btn normal" onclick="setExame('eco','N',this)">Normal</button><button class="exame-btn alterado" onclick="setExame('eco','A',this)">Alterado</button></div></div>
+                <div class="obs-field" id="ecoObs"><textarea class="obs-input" id="ecoObsText" rows="2" placeholder="Descrever (FE, alterações valvares, etc)"></textarea></div>
+                <div class="form-group mt-12 mb-0"><label class="form-label">Outros Exames</label><textarea class="form-input" id="outrosExames" rows="2" placeholder="Outros exames realizados"></textarea></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO 8: JEJUM -->
+    <section class="section" data-section="8">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title-group">
+                <span class="section-number">8</span>
+                <span class="section-title">Jejum</span>
+            </div>
+            <svg class="section-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="section-content">
+            <div class="form-group"><label class="form-label">Tempo de Jejum</label><input type="text" class="form-input" id="jejum" placeholder="Ex: 8 horas"></div>
+            <div class="toggle-group mb-0"><span class="toggle-label">Estômago cheio?</span><label class="toggle"><input type="checkbox" id="estCheio"><span class="toggle-slider"></span></label></div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO 9: PLANEJAMENTO -->
+    <section class="section" data-section="9">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title-group">
+                <span class="section-number">9</span>
+                <span class="section-title">Planejamento Anestésico</span>
+            </div>
+            <svg class="section-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="section-content">
+            <div class="form-group">
+                <label class="form-label">Técnica Proposta</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item"><input type="checkbox" name="tecnica" value="Geral"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Geral</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="tecnica" value="Raqui"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Raqui</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="tecnica" value="Peridural"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Peridural</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="tecnica" value="BloqPerif"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Bloq. Perif.</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="tecnica" value="Sedacao"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Sedação</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="tecnica" value="Local"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Local</span></label>
+                    <label class="checkbox-item"><input type="checkbox" name="tecnica" value="Combinada"><span class="checkbox-label"><span class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Combinada</span></label>
+                </div>
+            </div>
+            <div class="toggle-group"><span class="toggle-label">MPA (Medicação Pré-Anestésica)?</span><label class="toggle"><input type="checkbox" id="mpa" onchange="toggleCond('mpaObs',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="conditional-field" id="mpaObs"><input type="text" class="form-input" id="mpaDesc" placeholder="Prescrever MPA"></div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO 10: SOLICITAÇÕES -->
+    <section class="section" data-section="10">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title-group">
+                <span class="section-number">10</span>
+                <span class="section-title">Solicitações</span>
+            </div>
+            <svg class="section-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="section-content">
+            <div class="toggle-group"><span class="toggle-label">Reserva de Hemocomponentes?</span><label class="toggle"><input type="checkbox" id="hemo" onchange="toggleCond('hemoObs',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="conditional-field" id="hemoObs"><input type="text" class="form-input" id="hemoDesc" placeholder="Especificar (CH, PFC, etc)"></div>
+            <div class="toggle-group"><span class="toggle-label">Avaliar com equipe cirúrgica?</span><label class="toggle"><input type="checkbox" id="avalEquipe"><span class="toggle-slider"></span></label></div>
+            <div class="toggle-group"><span class="toggle-label">Solicitação de UTI?</span><label class="toggle"><input type="checkbox" id="uti"><span class="toggle-slider"></span></label></div>
+            <div class="toggle-group mb-0"><span class="toggle-label">Solicitação de UI?</span><label class="toggle"><input type="checkbox" id="ui"><span class="toggle-slider"></span></label></div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO 11: LIBERAÇÃO -->
+    <section class="section" data-section="11">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title-group">
+                <span class="section-number">11</span>
+                <span class="section-title">Liberação</span>
+            </div>
+            <svg class="section-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="section-content">
+            <div class="form-group">
+                <label class="form-label required">Status</label>
+                <div class="radio-group">
+                    <label class="radio-item"><input type="radio" name="liberacao" value="L" onchange="toggleCond('libPendObs',false);toggleCond('libSuspObs',false)"><span class="radio-label" style="background:var(--success-light);border-color:var(--success);color:var(--success)">✓ Liberado</span></label>
+                    <label class="radio-item"><input type="radio" name="liberacao" value="R" onchange="toggleCond('libPendObs',true);toggleCond('libSuspObs',false)"><span class="radio-label" style="background:var(--warning-light);border-color:var(--warning);color:var(--warning)">⏳ Reavaliação</span></label>
+                    <label class="radio-item"><input type="radio" name="liberacao" value="S" onchange="toggleCond('libPendObs',false);toggleCond('libSuspObs',true)"><span class="radio-label" style="background:var(--danger-light);border-color:var(--danger);color:var(--danger)">✕ Suspenso</span></label>
+                </div>
+            </div>
+            <div class="conditional-field" id="libPendObs"><textarea class="form-input" rows="2" id="pendDesc" placeholder="O que está pendente?"></textarea></div>
+            <div class="conditional-field" id="libSuspObs"><textarea class="form-input" rows="2" id="suspDesc" placeholder="Motivo da suspensão"></textarea></div>
+            
+            <div class="subsection mt-12">
+                <div class="subsection-header"><span class="subsection-title">📋 Orientações ao Paciente</span></div>
+                <div class="toggle-group"><span class="toggle-label">Suspender medicamento?</span><label class="toggle"><input type="checkbox" id="suspMed" onchange="toggleCond('suspMedObs',this.checked)"><span class="toggle-slider"></span></label></div>
+                <div class="conditional-field" id="suspMedObs"><textarea class="form-input" rows="2" id="suspMedDesc" placeholder="Quais medicamentos suspender"></textarea></div>
+                <div class="form-group mt-12 mb-0"><label class="form-label">Outras Orientações</label><textarea class="form-input" id="orientacoes" rows="3" placeholder="Orientações adicionais"></textarea></div>
+            </div>
+
+            <div class="subsection mt-12 mb-0">
+                <div class="subsection-header"><span class="subsection-title">✍️ Assinatura</span></div>
+                <div class="form-row">
+                    <div class="form-group"><label class="form-label">Data</label><input type="date" class="form-input" id="dataAval"></div>
+                    <div class="form-group"><label class="form-label">Anestesiologista</label><input type="text" class="form-input" id="medico" placeholder="Nome"></div>
+                </div>
+                <div class="form-group mb-0"><label class="form-label">CRM</label><input type="text" class="form-input" id="crm" placeholder="CRM/UF"></div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav app-hidden" id="bottomNav">
+    <button class="nav-btn secondary" onclick="limparFormulario()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+        Limpar
+    </button>
+    <button class="nav-btn primary" onclick="salvarAvaliacao()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Salvar
+    </button>
+</nav>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+    <div class="modal">
+        <div class="modal-header"><h3 class="modal-title" id="modalTitle">Confirmar</h3></div>
+        <div class="modal-body"><p id="modalMsg">Tem certeza?</p></div>
+        <div class="modal-footer">
+            <button class="modal-btn cancel" onclick="closeModal()">Cancelar</button>
+            <button class="modal-btn confirm" id="modalConfirmBtn" onclick="confirmModal()">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+    // ========== VARIÁVEIS GLOBAIS ==========
+    var db = null;
+    var currentId = null;
+    var modalCallback = null;
+    var exameValues = {};
+
+    // ========== SPLASH SCREEN ==========
+    function entrarApp() {
+        document.getElementById('splash').classList.add('hidden');
+        document.getElementById('appHeader').style.display = 'block';
+        document.getElementById('appTabs').style.display = 'flex';
+        document.getElementById('formContainer').classList.remove('app-hidden');
+        document.getElementById('formContainer').classList.add('active');
+        document.getElementById('bottomNav').classList.remove('app-hidden');
+        document.getElementById('bottomNav').style.display = 'flex';
+        initApp();
+    }
+
+    // ========== TABS ==========
+    function showTab(tab) {
+        var tabs = document.querySelectorAll('.tab');
+        tabs.forEach(function(t) { t.classList.remove('active'); });
+        
+        if (tab === 'form') {
+            tabs[0].classList.add('active');
+            document.getElementById('formContainer').classList.add('active');
+            document.getElementById('listaContainer').classList.remove('active');
+            document.getElementById('bottomNav').style.display = 'flex';
+        } else {
+            tabs[1].classList.add('active');
+            document.getElementById('formContainer').classList.remove('active');
+            document.getElementById('listaContainer').classList.add('active');
+            document.getElementById('bottomNav').style.display = 'none';
+            carregarLista();
+        }
+    }
+
+    // ========== INICIALIZAÇÃO ==========
+    function initApp() {
+        initDB();
+        initProgress();
+        setDataHoje();
+    }
+
+    function initDB() {
+        var request = indexedDB.open('PreAnestesiaDB', 1);
+        request.onerror = function() { console.log('IndexedDB não disponível'); };
+        request.onsuccess = function(e) { db = e.target.result; };
+        request.onupgradeneeded = function(e) {
+            var database = e.target.result;
+            if (!database.objectStoreNames.contains('avaliacoes')) {
+                var store = database.createObjectStore('avaliacoes', { keyPath: 'id', autoIncrement: true });
+                store.createIndex('nome', 'nome', { unique: false });
+                store.createIndex('prontuario', 'prontuario', { unique: false });
+                store.createIndex('data', 'dataAval', { unique: false });
+            }
+        };
+    }
+
+    function initProgress() {
+        var steps = document.getElementById('progressSteps');
+        steps.innerHTML = '';
+        for (var i = 0; i < 11; i++) {
+            var step = document.createElement('div');
+            step.className = 'progress-step';
+            steps.appendChild(step);
+        }
+        updateProgress();
+    }
+
+    function setDataHoje() {
+        var hoje = new Date().toISOString().split('T')[0];
+        document.getElementById('dataAval').value = hoje;
+    }
+
+    // ========== LISTA DE PACIENTES ==========
+    function carregarLista() {
+        if (!db) {
+            setTimeout(carregarLista, 100);
+            return;
+        }
+        var tx = db.transaction(['avaliacoes'], 'readonly');
+        var store = tx.objectStore('avaliacoes');
+        var request = store.getAll();
+        
+        request.onsuccess = function() {
+            var pacientes = request.result || [];
+            pacientes.sort(function(a, b) {
+                return new Date(b.dataAval || 0) - new Date(a.dataAval || 0);
+            });
+            renderLista(pacientes);
+        };
+    }
+
+    function renderLista(pacientes) {
+        var container = document.getElementById('listaContent');
+        var countEl = document.getElementById('listaCount');
+        
+        countEl.textContent = pacientes.length + ' paciente' + (pacientes.length !== 1 ? 's' : '');
+        
+        if (pacientes.length === 0) {
+            container.innerHTML = '<div class="lista-empty"><div class="lista-empty-icon">📋</div><div class="lista-empty-text">Nenhuma avaliação salva</div><div class="lista-empty-sub">Crie uma nova avaliação no formulário</div></div>';
+            return;
+        }
+        
+        var html = '';
+        pacientes.forEach(function(p) {
+            var statusClass = p.liberacao === 'L' ? 'liberado' : (p.liberacao === 'R' ? 'reavaliacao' : 'suspenso');
+            var statusText = p.liberacao === 'L' ? '✓ Liberado' : (p.liberacao === 'R' ? '⏳ Reavaliação' : '✕ Suspenso');
+            var dataFormatada = p.dataAval ? formatarData(p.dataAval) : '-';
+            var asaText = p.asa ? ('ASA ' + p.asa + (p.asaE ? 'E' : '')) : '-';
+            
+            html += '<div class="paciente-card" onclick="event.stopPropagation()">';
+            html += '<div class="paciente-header"><span class="paciente-nome">' + (p.nome || 'Sem nome') + '</span><span class="paciente-asa">' + asaText + '</span></div>';
+            html += '<div class="paciente-info"><span>📋 ' + (p.prontuario || '-') + '</span><span>📅 ' + dataFormatada + '</span></div>';
+            if (p.liberacao) html += '<span class="paciente-status ' + statusClass + '">' + statusText + '</span>';
+            html += '<div class="paciente-actions">';
+            html += '<button class="paciente-action edit" onclick="editarPaciente(' + p.id + ')">✏️ Editar</button>';
+            html += '<button class="paciente-action pdf" onclick="exportarPDFPaciente(' + p.id + ')">📄 PDF</button>';
+            html += '<button class="paciente-action delete" onclick="confirmarExclusao(' + p.id + ')">🗑️</button>';
+            html += '</div>';
+            html += '<div class="paciente-actions" style="border-top:none;padding-top:0">';
+            html += '<button class="paciente-action" style="background:#e0f2fe;color:#0284c7" onclick="enviarParaIntra(' + p.id + ')">🩺 Enviar p/ Intra</button>';
+            html += '<button class="paciente-action" style="background:#f3e8ff;color:#7c3aed" onclick="enviarParaRPA(' + p.id + ')">🏥 Enviar p/ RPA</button>';
+            html += '</div></div>';
+        });
+        container.innerHTML = html;
+    }
+
+    function filtrarLista() {
+        var termo = document.getElementById('searchInput').value.toLowerCase().trim();
+        if (!db) return;
+        
+        var tx = db.transaction(['avaliacoes'], 'readonly');
+        var store = tx.objectStore('avaliacoes');
+        var request = store.getAll();
+        
+        request.onsuccess = function() {
+            var pacientes = request.result || [];
+            if (termo) {
+                pacientes = pacientes.filter(function(p) {
+                    var nome = (p.nome || '').toLowerCase();
+                    var pront = (p.prontuario || '').toLowerCase();
+                    return nome.indexOf(termo) >= 0 || pront.indexOf(termo) >= 0;
+                });
+            }
+            pacientes.sort(function(a, b) {
+                return new Date(b.dataAval || 0) - new Date(a.dataAval || 0);
+            });
+            renderLista(pacientes);
+        };
+    }
+
+    function editarPaciente(id) {
+        if (!db) return;
+        var tx = db.transaction(['avaliacoes'], 'readonly');
+        var store = tx.objectStore('avaliacoes');
+        var request = store.get(id);
+        
+        request.onsuccess = function() {
+            var dados = request.result;
+            if (dados) {
+                currentId = id;
+                preencherFormulario(dados);
+                showTab('form');
+                showToast('Avaliação carregada', 'success');
+            }
+        };
+    }
+
+    function confirmarExclusao(id) {
+        showModal('Excluir Avaliação', 'Tem certeza que deseja excluir esta avaliação? Esta ação não pode ser desfeita.', function() {
+            excluirPaciente(id);
+        }, true);
+    }
+
+    function excluirPaciente(id) {
+        if (!db) return;
+        var tx = db.transaction(['avaliacoes'], 'readwrite');
+        var store = tx.objectStore('avaliacoes');
+        store.delete(id);
+        tx.oncomplete = function() {
+            showToast('Avaliação excluída', 'success');
+            carregarLista();
+        };
+    }
+
+    function exportarPDFPaciente(id) {
+        if (!db) return;
+        var tx = db.transaction(['avaliacoes'], 'readonly');
+        var store = tx.objectStore('avaliacoes');
+        var request = store.get(id);
+        
+        request.onsuccess = function() {
+            var dados = request.result;
+            if (dados) {
+                gerarPDF(dados);
+            }
+        };
+    }
+
+    // ========== FORMULÁRIO ==========
+    function preencherFormulario(d) {
+        // Limpar primeiro
+        limparCampos();
+        
+        // Identificação
+        if (d.nome) document.getElementById('nome').value = d.nome;
+        if (d.prontuario) document.getElementById('prontuario').value = d.prontuario;
+        if (d.cpf) document.getElementById('cpf').value = d.cpf;
+        if (d.dataNasc) { document.getElementById('dataNasc').value = d.dataNasc; calcIdade(); }
+        if (d.genero) setRadio('genero', d.genero);
+        
+        // Procedimento
+        if (d.cirurgia) document.getElementById('cirurgia').value = d.cirurgia;
+        if (d.diagnostico) document.getElementById('diagnostico').value = d.diagnostico;
+        if (d.carater) setRadio('carater', d.carater);
+        if (d.lat) setRadio('lat', d.lat);
+        if (d.reop) setRadio('reop', d.reop);
+        
+        // HPP - Checkboxes
+        if (d.cardio) setCheckboxes('cardio', d.cardio);
+        if (d.resp) setCheckboxes('resp', d.resp);
+        if (d.endo) setCheckboxes('endo', d.endo);
+        if (d.gi) setCheckboxes('gi', d.gi);
+        if (d.neuro) setCheckboxes('neuro', d.neuro);
+        if (d.renal) setCheckboxes('renal', d.renal);
+        if (d.infec) setCheckboxes('infec', d.infec);
+        if (d.hemato) setCheckboxes('hemato', d.hemato);
+        if (d.musculo) setCheckboxes('musculo', d.musculo);
+        if (d.cancer) setCheckboxes('cancer', d.cancer);
+        
+        // Alergias
+        if (d.alergia) { setRadio('alergia', d.alergia); if (d.alergia === 'S') toggleCond('alergiaObs', true); }
+        if (d.alergiaDesc) document.getElementById('alergiaDesc').value = d.alergiaDesc;
+        
+        // Medicamentos
+        if (d.med) { setRadio('med', d.med); if (d.med === 'S') toggleCond('medObs', true); }
+        if (d.medDesc) document.getElementById('medDesc').value = d.medDesc;
+        
+        // Hábitos
+        if (d.habitos) setCheckboxes('habitos', d.habitos);
+        if (d.cargaTab) { document.getElementById('cargaTab').value = d.cargaTab; toggleCond('tabObs', true); }
+        
+        // Exame Físico
+        if (d.peso) { document.getElementById('peso').value = d.peso; calcIMC(); }
+        if (d.altura) { document.getElementById('altura').value = d.altura; calcIMC(); }
+        if (d.pas) document.getElementById('pas').value = d.pas;
+        if (d.pad) document.getElementById('pad').value = d.pad;
+        if (d.fc) document.getElementById('fc').value = d.fc;
+        if (d.spo2) document.getElementById('spo2').value = d.spo2;
+        if (d.fr) document.getElementById('fr').value = d.fr;
+        
+        // Exames por sistema
+        if (d.acv) { exameValues['acv'] = d.acv; restoreExameBtn('acv', d.acv); }
+        if (d.acvObs) { document.getElementById('acvObsText').value = d.acvObs; if (d.acv === 'A') document.getElementById('acvObs').classList.add('visible'); }
+        if (d.ar) { exameValues['ar'] = d.ar; restoreExameBtn('ar', d.ar); }
+        if (d.arObs) { document.getElementById('arObsText').value = d.arObs; if (d.ar === 'A') document.getElementById('arObs').classList.add('visible'); }
+        if (d.abd) { exameValues['abd'] = d.abd; restoreExameBtn('abd', d.abd); }
+        if (d.abdObs) { document.getElementById('abdObsText').value = d.abdObs; if (d.abd === 'A') document.getElementById('abdObs').classList.add('visible'); }
+        if (d.neuroEx) { exameValues['neuroEx'] = d.neuroEx; restoreExameBtn('neuroEx', d.neuroEx); }
+        if (d.neuroExObs) { document.getElementById('neuroExObsText').value = d.neuroExObs; if (d.neuroEx === 'A') document.getElementById('neuroExObs').classList.add('visible'); }
+        
+        // Via aérea
+        if (d.mallampati) setRadio('mallampati', d.mallampati);
+        if (d.interinc) setRadio('interinc', d.interinc);
+        if (d.tireo) setRadio('tireo', d.tireo);
+        if (d.protrusao) setRadio('protrusao', d.protrusao);
+        if (d.mobCerv) setRadio('mobCerv', d.mobCerv);
+        if (d.pescoco) setRadio('pescoco', d.pescoco);
+        if (d.desvioTraq) document.getElementById('desvioTraq').checked = d.desvioTraq;
+        if (d.massaCerv) document.getElementById('massaCerv').checked = d.massaCerv;
+        if (d.vad) document.getElementById('vad').checked = d.vad;
+        
+        // Dentição
+        if (d.denticao) setCheckboxes('denticao', d.denticao);
+        if (d.protese) { setRadio('protese', d.protese); toggleCond('proteseObs', true); }
+        
+        // Antecedentes
+        if (d.cirAnt) document.getElementById('cirAnt').value = d.cirAnt;
+        if (d.iotDif) document.getElementById('iotDif').checked = d.iotDif;
+        if (d.avDif) document.getElementById('avDif').checked = d.avDif;
+        if (d.reacaoAdv) { document.getElementById('reacaoAdv').checked = d.reacaoAdv; toggleCond('reacaoObs', true); }
+        if (d.reacaoDesc) document.getElementById('reacaoDesc').value = d.reacaoDesc;
+        
+        // ASA
+        if (d.asa) setRadio('asa', d.asa);
+        if (d.asaE) document.getElementById('asaE').checked = d.asaE;
+        
+        // Exames
+        if (d.hb) document.getElementById('hb').value = d.hb;
+        if (d.ht) document.getElementById('ht').value = d.ht;
+        if (d.plaq) document.getElementById('plaq').value = d.plaq;
+        if (d.ureia) document.getElementById('ureia').value = d.ureia;
+        if (d.creat) document.getElementById('creat').value = d.creat;
+        if (d.na) document.getElementById('na').value = d.na;
+        if (d.k) document.getElementById('k').value = d.k;
+        if (d.glic) document.getElementById('glic').value = d.glic;
+        if (d.hba1c) document.getElementById('hba1c').value = d.hba1c;
+        if (d.coag) setRadio('coag', d.coag);
+        
+        // Exames de imagem com obs
+        if (d.ecg) { exameValues['ecg'] = d.ecg; restoreExameBtn('ecg', d.ecg); }
+        if (d.ecgObs) { document.getElementById('ecgObsText').value = d.ecgObs; if (d.ecg === 'A') document.getElementById('ecgObs').classList.add('visible'); }
+        if (d.rx) { exameValues['rx'] = d.rx; restoreExameBtn('rx', d.rx); }
+        if (d.rxObs) { document.getElementById('rxObsText').value = d.rxObs; if (d.rx === 'A') document.getElementById('rxObs').classList.add('visible'); }
+        if (d.eco) { exameValues['eco'] = d.eco; restoreExameBtn('eco', d.eco); }
+        if (d.ecoObs) { document.getElementById('ecoObsText').value = d.ecoObs; if (d.eco === 'A') document.getElementById('ecoObs').classList.add('visible'); }
+        if (d.outrosExames) document.getElementById('outrosExames').value = d.outrosExames;
+        
+        // Jejum
+        if (d.jejum) document.getElementById('jejum').value = d.jejum;
+        if (d.estCheio) document.getElementById('estCheio').checked = d.estCheio;
+        
+        // Planejamento
+        if (d.tecnica) setCheckboxes('tecnica', d.tecnica);
+        if (d.mpa) { document.getElementById('mpa').checked = d.mpa; toggleCond('mpaObs', true); }
+        if (d.mpaDesc) document.getElementById('mpaDesc').value = d.mpaDesc;
+        
+        // Solicitações
+        if (d.hemo) { document.getElementById('hemo').checked = d.hemo; toggleCond('hemoObs', true); }
+        if (d.hemoDesc) document.getElementById('hemoDesc').value = d.hemoDesc;
+        if (d.avalEquipe) document.getElementById('avalEquipe').checked = d.avalEquipe;
+        if (d.uti) document.getElementById('uti').checked = d.uti;
+        if (d.ui) document.getElementById('ui').checked = d.ui;
+        
+        // Liberação
+        if (d.liberacao) {
+            setRadio('liberacao', d.liberacao);
+            if (d.liberacao === 'R') toggleCond('libPendObs', true);
+            if (d.liberacao === 'S') toggleCond('libSuspObs', true);
+        }
+        if (d.pendDesc) document.getElementById('pendDesc').value = d.pendDesc;
+        if (d.suspDesc) document.getElementById('suspDesc').value = d.suspDesc;
+        if (d.suspMed) { document.getElementById('suspMed').checked = d.suspMed; toggleCond('suspMedObs', true); }
+        if (d.suspMedDesc) document.getElementById('suspMedDesc').value = d.suspMedDesc;
+        if (d.orientacoes) document.getElementById('orientacoes').value = d.orientacoes;
+        if (d.dataAval) document.getElementById('dataAval').value = d.dataAval;
+        if (d.medico) document.getElementById('medico').value = d.medico;
+        if (d.crm) document.getElementById('crm').value = d.crm;
+        
+        updateProgress();
+    }
+
+    function restoreExameBtn(name, value) {
+        var section = document.getElementById(name + 'Obs');
+        if (!section) return;
+        var btns = section.parentElement.querySelectorAll('.exame-btn');
+        btns.forEach(function(btn) {
+            btn.classList.remove('active');
+            if ((value === 'N' && btn.classList.contains('normal')) || (value === 'A' && btn.classList.contains('alterado'))) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    function setRadio(name, value) {
+        var radio = document.querySelector('input[name="' + name + '"][value="' + value + '"]');
+        if (radio) radio.checked = true;
+    }
+
+    function setCheckboxes(name, values) {
+        if (!values || !values.length) return;
+        values.forEach(function(v) {
+            var cb = document.querySelector('input[name="' + name + '"][value="' + v + '"]');
+            if (cb) cb.checked = true;
+        });
+    }
+
+    function limparCampos() {
+        var inputs = document.querySelectorAll('.form-input');
+        inputs.forEach(function(i) { i.value = ''; });
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(function(c) { c.checked = false; });
+        var radios = document.querySelectorAll('input[type="radio"]');
+        radios.forEach(function(r) { r.checked = false; });
+        var btns = document.querySelectorAll('.exame-btn');
+        btns.forEach(function(b) { b.classList.remove('active'); });
+        var obs = document.querySelectorAll('.obs-field');
+        obs.forEach(function(o) { o.classList.remove('visible'); });
+        var conds = document.querySelectorAll('.conditional-field');
+        conds.forEach(function(c) { c.classList.remove('visible'); });
+        var sems = document.querySelectorAll('.sem-alteracao');
+        sems.forEach(function(s) { s.classList.remove('active'); });
+        document.getElementById('imcDisplay').classList.remove('visible');
+        exameValues = {};
+    }
+
+    // ========== COLETA DE DADOS ==========
+    function coletarDados() {
+        var getVal = function(id) { var el = document.getElementById(id); return el ? el.value : ''; };
+        var getRadio = function(name) { var r = document.querySelector('input[name="' + name + '"]:checked'); return r ? r.value : ''; };
+        var getChecks = function(name) { var arr = []; document.querySelectorAll('input[name="' + name + '"]:checked').forEach(function(c) { arr.push(c.value); }); return arr; };
+        var getToggle = function(id) { var el = document.getElementById(id); return el ? el.checked : false; };
+
+        return {
+            // Identificação
+            nome: getVal('nome'),
+            prontuario: getVal('prontuario'),
+            cpf: getVal('cpf'),
+            dataNasc: getVal('dataNasc'),
+            genero: getRadio('genero'),
+            // Procedimento
+            cirurgia: getVal('cirurgia'),
+            diagnostico: getVal('diagnostico'),
+            carater: getRadio('carater'),
+            lat: getRadio('lat'),
+            reop: getRadio('reop'),
+            // HPP
+            cardio: getChecks('cardio'),
+            resp: getChecks('resp'),
+            endo: getChecks('endo'),
+            gi: getChecks('gi'),
+            neuro: getChecks('neuro'),
+            renal: getChecks('renal'),
+            infec: getChecks('infec'),
+            hemato: getChecks('hemato'),
+            musculo: getChecks('musculo'),
+            cancer: getChecks('cancer'),
+            alergia: getRadio('alergia'),
+            alergiaDesc: getVal('alergiaDesc'),
+            med: getRadio('med'),
+            medDesc: getVal('medDesc'),
+            habitos: getChecks('habitos'),
+            cargaTab: getVal('cargaTab'),
+            // Exame Físico
+            peso: getVal('peso'),
+            altura: getVal('altura'),
+            pas: getVal('pas'),
+            pad: getVal('pad'),
+            fc: getVal('fc'),
+            spo2: getVal('spo2'),
+            fr: getVal('fr'),
+            acv: exameValues['acv'] || '',
+            acvObs: getVal('acvObsText'),
+            ar: exameValues['ar'] || '',
+            arObs: getVal('arObsText'),
+            abd: exameValues['abd'] || '',
+            abdObs: getVal('abdObsText'),
+            neuroEx: exameValues['neuroEx'] || '',
+            neuroExObs: getVal('neuroExObsText'),
+            mallampati: getRadio('mallampati'),
+            interinc: getRadio('interinc'),
+            tireo: getRadio('tireo'),
+            protrusao: getRadio('protrusao'),
+            mobCerv: getRadio('mobCerv'),
+            pescoco: getRadio('pescoco'),
+            desvioTraq: getToggle('desvioTraq'),
+            massaCerv: getToggle('massaCerv'),
+            vad: getToggle('vad'),
+            denticao: getChecks('denticao'),
+            protese: getRadio('protese'),
+            // Antecedentes
+            cirAnt: getVal('cirAnt'),
+            iotDif: getToggle('iotDif'),
+            avDif: getToggle('avDif'),
+            reacaoAdv: getToggle('reacaoAdv'),
+            reacaoDesc: getVal('reacaoDesc'),
+            // ASA
+            asa: getRadio('asa'),
+            asaE: getToggle('asaE'),
+            // Exames
+            hb: getVal('hb'),
+            ht: getVal('ht'),
+            plaq: getVal('plaq'),
+            ureia: getVal('ureia'),
+            creat: getVal('creat'),
+            na: getVal('na'),
+            k: getVal('k'),
+            glic: getVal('glic'),
+            hba1c: getVal('hba1c'),
+            coag: getRadio('coag'),
+            ecg: exameValues['ecg'] || '',
+            ecgObs: getVal('ecgObsText'),
+            rx: exameValues['rx'] || '',
+            rxObs: getVal('rxObsText'),
+            eco: exameValues['eco'] || '',
+            ecoObs: getVal('ecoObsText'),
+            outrosExames: getVal('outrosExames'),
+            // Jejum
+            jejum: getVal('jejum'),
+            estCheio: getToggle('estCheio'),
+            // Planejamento
+            tecnica: getChecks('tecnica'),
+            mpa: getToggle('mpa'),
+            mpaDesc: getVal('mpaDesc'),
+            // Solicitações
+            hemo: getToggle('hemo'),
+            hemoDesc: getVal('hemoDesc'),
+            avalEquipe: getToggle('avalEquipe'),
+            uti: getToggle('uti'),
+            ui: getToggle('ui'),
+            // Liberação
+            liberacao: getRadio('liberacao'),
+            pendDesc: getVal('pendDesc'),
+            suspDesc: getVal('suspDesc'),
+            suspMed: getToggle('suspMed'),
+            suspMedDesc: getVal('suspMedDesc'),
+            orientacoes: getVal('orientacoes'),
+            dataAval: getVal('dataAval'),
+            medico: getVal('medico'),
+            crm: getVal('crm')
+        };
+    }
+
+    // ========== SALVAR ==========
+    function salvarAvaliacao() {
+        var dados = coletarDados();
+        if (!dados.nome) {
+            showToast('Preencha o nome do paciente', 'error');
+            return;
+        }
+        if (!db) {
+            showToast('Banco de dados não disponível', 'error');
+            return;
+        }
+        
+        var tx = db.transaction(['avaliacoes'], 'readwrite');
+        var store = tx.objectStore('avaliacoes');
+        
+        if (currentId) {
+            dados.id = currentId;
+            store.put(dados);
+        } else {
+            store.add(dados);
+        }
+        
+        tx.oncomplete = function() {
+            showToast('Avaliação salva com sucesso!', 'success');
+            currentId = null;
+        };
+        tx.onerror = function() {
+            showToast('Erro ao salvar', 'error');
+        };
+    }
+
+    // ========== FUNÇÕES DE UI ==========
+    function toggleSection(header) {
+        var section = header.parentElement;
+        var isExpanded = section.classList.contains('expanded');
+        document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('expanded'); });
+        if (!isExpanded) section.classList.add('expanded');
+    }
+
+    function toggleSemAlt(btn, group) {
+        btn.classList.toggle('active');
+        var isActive = btn.classList.contains('active');
+        var groupEl = document.getElementById(group + 'Group');
+        if (groupEl) {
+            groupEl.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
+                cb.checked = false;
+                cb.disabled = isActive;
+            });
+        }
+        updateProgress();
+    }
+
+    function toggleCond(id, show) {
+        var el = document.getElementById(id);
+        if (el) {
+            if (show) el.classList.add('visible');
+            else el.classList.remove('visible');
+        }
+    }
+
+    function setExame(name, value, btn) {
+        var parent = btn.parentElement;
+        parent.querySelectorAll('.exame-btn').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        exameValues[name] = value;
+        var obsEl = document.getElementById(name + 'Obs');
+        if (obsEl) {
+            if (value === 'A') obsEl.classList.add('visible');
+            else obsEl.classList.remove('visible');
+        }
+        updateProgress();
+    }
+
+    function calcIdade() {
+        var dataNasc = document.getElementById('dataNasc').value;
+        if (!dataNasc) return;
+        var hoje = new Date();
+        var nasc = new Date(dataNasc);
+        var idade = hoje.getFullYear() - nasc.getFullYear();
+        var m = hoje.getMonth() - nasc.getMonth();
+        if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+        document.getElementById('idade').value = idade + ' anos';
+        updateProgress();
+    }
+
+    function calcIMC() {
+        var peso = parseFloat(document.getElementById('peso').value);
+        var altura = parseFloat(document.getElementById('altura').value);
+        if (!peso || !altura) return;
+        var alturaM = altura / 100;
+        var imc = peso / (alturaM * alturaM);
+        var classe = '';
+        if (imc < 18.5) classe = 'Abaixo do peso';
+        else if (imc < 25) classe = 'Normal';
+        else if (imc < 30) classe = 'Sobrepeso';
+        else if (imc < 35) classe = 'Obesidade I';
+        else if (imc < 40) classe = 'Obesidade II';
+        else classe = 'Obesidade III';
+        document.getElementById('imcValue').textContent = imc.toFixed(1);
+        document.getElementById('imcClass').textContent = classe;
+        document.getElementById('imcDisplay').classList.add('visible');
+        updateProgress();
+    }
+
+    function mascaraCPF(input) {
+        var v = input.value.replace(/\D/g, '');
+        if (v.length > 11) v = v.slice(0, 11);
+        if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+        else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+        else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+        input.value = v;
+    }
+
+    function updateProgress() {
+        var total = 11;
+        var filled = 0;
+        var sections = document.querySelectorAll('.section');
+        
+        sections.forEach(function(section, idx) {
+            var hasContent = false;
+            var inputs = section.querySelectorAll('input, textarea, select');
+            inputs.forEach(function(input) {
+                if (input.type === 'checkbox' || input.type === 'radio') {
+                    if (input.checked) hasContent = true;
+                } else if (input.value && input.value.trim()) {
+                    hasContent = true;
+                }
+            });
+            var sems = section.querySelectorAll('.sem-alteracao.active');
+            if (sems.length > 0) hasContent = true;
+            
+            var num = section.querySelector('.section-number');
+            if (hasContent) {
+                filled++;
+                if (num) num.classList.add('completed');
+            } else {
+                if (num) num.classList.remove('completed');
+            }
+        });
+        
+        var pct = Math.round((filled / total) * 100);
+        document.getElementById('progressFill').style.width = pct + '%';
+        document.getElementById('progressPercent').textContent = pct + '%';
+        
+        var steps = document.querySelectorAll('.progress-step');
+        steps.forEach(function(step, idx) {
+            if (idx < filled) step.classList.add('completed');
+            else step.classList.remove('completed');
+        });
+    }
+
+    function formatarData(data) {
+        if (!data) return '-';
+        var parts = data.split('-');
+        if (parts.length === 3) return parts[2] + '/' + parts[1] + '/' + parts[0];
+        return data;
+    }
+
+    // ========== TOAST & MODAL ==========
+    function showToast(msg, type) {
+        var toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.className = 'toast ' + (type || '');
+        toast.classList.add('show');
+        setTimeout(function() { toast.classList.remove('show'); }, 3000);
+    }
+
+    function showModal(title, msg, callback, danger) {
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalMsg').textContent = msg;
+        var btn = document.getElementById('modalConfirmBtn');
+        btn.className = 'modal-btn ' + (danger ? 'danger' : 'confirm');
+        modalCallback = callback;
+        document.getElementById('modal').classList.add('show');
+    }
+
+    function closeModal() {
+        document.getElementById('modal').classList.remove('show');
+        modalCallback = null;
+    }
+
+    function confirmModal() {
+        if (modalCallback) modalCallback();
+        closeModal();
+    }
+
+    // ========== AÇÕES DO HEADER ==========
+    function novoFormulario() {
+        showModal('Nova Avaliação', 'Descartar dados atuais e criar nova avaliação?', function() {
+            currentId = null;
+            limparCampos();
+            setDataHoje();
+            updateProgress();
+            showTab('form');
+            showToast('Novo formulário iniciado', 'success');
+        });
+    }
+
+    function limparFormulario() {
+        showModal('Limpar Formulário', 'Descartar todos os dados preenchidos?', function() {
+            currentId = null;
+            limparCampos();
+            setDataHoje();
+            updateProgress();
+            showToast('Formulário limpo', 'success');
+        });
+    }
+
+    function exportarPDF() {
+        var dados = coletarDados();
+        if (!dados.nome) {
+            showToast('Preencha ao menos o nome', 'error');
+            return;
+        }
+        gerarPDF(dados);
+    }
+
+    // ========== GERAÇÃO DE PDF ==========
+    function gerarPDF(d) {
+        var jsPDF = window.jspdf.jsPDF;
+        var doc = new jsPDF('p', 'mm', 'a4');
+        var y = 15;
+        var lm = 15;
+        var pageWidth = 210;
+        var contentWidth = pageWidth - 30;
+        
+        function checkPage(needed) {
+            if (y + needed > 280) { doc.addPage(); y = 15; }
+        }
+        
+        function titulo(txt) {
+            checkPage(12);
+            doc.setFillColor(15, 118, 110);
+            doc.rect(lm, y, contentWidth, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.text(txt, lm + 3, y + 5.5);
+            doc.setTextColor(0, 0, 0);
+            y += 12;
+        }
+        
+        function linha(label, valor) {
+            if (!valor && valor !== 0) return;
+            checkPage(6);
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'bold');
+            doc.text(label + ':', lm, y);
+            doc.setFont('helvetica', 'normal');
+            var labelWidth = doc.getTextWidth(label + ': ');
+            var maxWidth = contentWidth - labelWidth - 5;
+            var lines = doc.splitTextToSize(String(valor), maxWidth);
+            doc.text(lines, lm + labelWidth, y);
+            y += lines.length * 5;
+        }
+        
+        function linhaSimples(txt) {
+            if (!txt) return;
+            checkPage(6);
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+            var lines = doc.splitTextToSize(txt, contentWidth);
+            doc.text(lines, lm, y);
+            y += lines.length * 5;
+        }
+
+        // Cabeçalho
+        doc.setFillColor(15, 118, 110);
+        doc.rect(0, 0, 210, 25, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.text('UNIANEST - Avaliação Pré-Anestésica', 105, 10, { align: 'center' });
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Unirio', 105, 17, { align: 'center' });
+        doc.setTextColor(0, 0, 0);
+        y = 32;
+
+        // 1. Identificação
+        titulo('1. IDENTIFICAÇÃO DO PACIENTE');
+        linha('Nome', d.nome);
+        linha('Prontuário', d.prontuario);
+        if (d.cpf) linha('CPF', d.cpf);
+        if (d.dataNasc) {
+            var idade = '';
+            var nasc = new Date(d.dataNasc);
+            var hoje = new Date();
+            var anos = hoje.getFullYear() - nasc.getFullYear();
+            var m = hoje.getMonth() - nasc.getMonth();
+            if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) anos--;
+            idade = anos + ' anos';
+            linha('Data Nascimento', formatarData(d.dataNasc) + ' (' + idade + ')');
+        }
+        var generos = { 'M': 'Masculino', 'F': 'Feminino', 'O': 'Outro' };
+        if (d.genero) linha('Gênero', generos[d.genero] || d.genero);
+
+        // 2. Procedimento
+        titulo('2. PROCEDIMENTO PROPOSTO');
+        linha('Cirurgia', d.cirurgia);
+        if (d.diagnostico) linha('Diagnóstico', d.diagnostico);
+        var carateres = { 'E': 'Eletiva', 'U': 'Urgência' };
+        if (d.carater) linha('Caráter', carateres[d.carater] || d.carater);
+        var lats = { 'D': 'Direita', 'E': 'Esquerda', 'B': 'Bilateral', 'NA': 'N/A' };
+        if (d.lat) linha('Lateralidade', lats[d.lat] || d.lat);
+        if (d.reop) linha('Reoperação', d.reop === 'S' ? 'Sim' : 'Não');
+
+        // 3. HPP
+        titulo('3. HISTÓRIA PATOLÓGICA PREGRESSA');
+        if (d.cardio && d.cardio.length) linha('Cardiovascular', d.cardio.join(', '));
+        if (d.resp && d.resp.length) linha('Respiratório', d.resp.join(', '));
+        if (d.endo && d.endo.length) linha('Endocrinológico', d.endo.join(', '));
+        if (d.gi && d.gi.length) linha('GI/Hepático', d.gi.join(', '));
+        if (d.neuro && d.neuro.length) linha('Neurológico', d.neuro.join(', '));
+        if (d.renal && d.renal.length) linha('Renal', d.renal.join(', '));
+        if (d.infec && d.infec.length) linha('Infeccioso', d.infec.join(', '));
+        if (d.hemato && d.hemato.length) linha('Hematológico', d.hemato.join(', '));
+        if (d.musculo && d.musculo.length) linha('Musculoesquelético', d.musculo.join(', '));
+        if (d.cancer && d.cancer.length) linha('Câncer', d.cancer.join(', '));
+        if (d.alergia === 'S') linha('Alergias', d.alergiaDesc || 'Sim');
+        else if (d.alergia === 'N') linha('Alergias', 'Nega');
+        if (d.med === 'S') linha('Medicamentos', d.medDesc || 'Sim');
+        else if (d.med === 'N') linha('Medicamentos', 'Não usa');
+        if (d.habitos && d.habitos.length) {
+            var hab = d.habitos.join(', ');
+            if (d.cargaTab) hab += ' (Carga tabágica: ' + d.cargaTab + ')';
+            linha('Hábitos', hab);
+        }
+
+        // 4. Exame Físico
+        titulo('4. EXAME FÍSICO');
+        var sinais = [];
+        if (d.peso) sinais.push('Peso: ' + d.peso + ' kg');
+        if (d.altura) sinais.push('Altura: ' + d.altura + ' cm');
+        if (d.peso && d.altura) {
+            var imc = (parseFloat(d.peso) / Math.pow(parseFloat(d.altura)/100, 2)).toFixed(1);
+            sinais.push('IMC: ' + imc);
+        }
+        if (d.pas && d.pad) sinais.push('PA: ' + d.pas + '/' + d.pad + ' mmHg');
+        if (d.fc) sinais.push('FC: ' + d.fc + ' bpm');
+        if (d.spo2) sinais.push('SpO₂: ' + d.spo2 + '%');
+        if (d.fr) sinais.push('FR: ' + d.fr + ' irpm');
+        if (sinais.length) linhaSimples(sinais.join(' | '));
+        
+        // Exame por sistema com observações
+        var exameNormal = d.acv === 'N' ? 'Normal' : (d.acv === 'A' ? 'Alterado' : '');
+        if (exameNormal) {
+            var acvTxt = exameNormal;
+            if (d.acv === 'A' && d.acvObs) acvTxt += ' - ' + d.acvObs;
+            linha('ACV', acvTxt);
+        }
+        var arStatus = d.ar === 'N' ? 'Normal' : (d.ar === 'A' ? 'Alterado' : '');
+        if (arStatus) {
+            var arTxt = arStatus;
+            if (d.ar === 'A' && d.arObs) arTxt += ' - ' + d.arObs;
+            linha('AR', arTxt);
+        }
+        var abdStatus = d.abd === 'N' ? 'Normal' : (d.abd === 'A' ? 'Alterado' : '');
+        if (abdStatus) {
+            var abdTxt = abdStatus;
+            if (d.abd === 'A' && d.abdObs) abdTxt += ' - ' + d.abdObs;
+            linha('Abdome', abdTxt);
+        }
+        var neuroStatus = d.neuroEx === 'N' ? 'Normal' : (d.neuroEx === 'A' ? 'Alterado' : '');
+        if (neuroStatus) {
+            var neuroTxt = neuroStatus;
+            if (d.neuroEx === 'A' && d.neuroExObs) neuroTxt += ' - ' + d.neuroExObs;
+            linha('Neurológico', neuroTxt);
+        }
+        
+        // Via aérea
+        y += 2;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        checkPage(6);
+        doc.text('Via Aérea:', lm, y);
+        y += 5;
+        doc.setFont('helvetica', 'normal');
+        if (d.mallampati) linha('Mallampati', 'Classe ' + d.mallampati);
+        if (d.interinc) linha('Dist. Interincisivos', d.interinc);
+        if (d.tireo) linha('Dist. Tireomentoniana', d.tireo);
+        if (d.protrusao) linha('Protrusão Mandibular', d.protrusao === 'N' ? 'Normal' : 'Limitada');
+        if (d.mobCerv) linha('Mobilidade Cervical', d.mobCerv === 'N' ? 'Normal' : 'Diminuída');
+        var pescocos = { 'N': 'Normal', 'L': 'Largo', 'C': 'Curto' };
+        if (d.pescoco) linha('Pescoço', pescocos[d.pescoco] || d.pescoco);
+        if (d.desvioTraq) linha('Desvio de Traqueia', 'Sim');
+        if (d.massaCerv) linha('Massa Cervical/Bócio', 'Sim');
+        if (d.vad) linha('Previsão VAD', 'Sim');
+        if (d.denticao && d.denticao.length) {
+            var dent = d.denticao.join(', ');
+            if (d.protese) {
+                var prots = { 'T': 'Total', 'P': 'Parcial', 'F': 'Fixa' };
+                dent += ' (' + (prots[d.protese] || d.protese) + ')';
+            }
+            linha('Dentição', dent);
+        }
+
+        // 5. Antecedentes
+        titulo('5. ANTECEDENTES ANESTÉSICO-CIRÚRGICOS');
+        if (d.cirAnt) linha('Cirurgias Anteriores', d.cirAnt);
+        if (d.iotDif) linha('IOT Difícil Prévia', 'Sim');
+        if (d.avDif) linha('Acesso Venoso Difícil', 'Sim');
+        if (d.reacaoAdv) linha('Reação Adversa', d.reacaoDesc || 'Sim');
+
+        // 6. ASA
+        titulo('6. CLASSIFICAÇÃO ASA');
+        if (d.asa) {
+            var asaText = 'ASA ' + d.asa;
+            if (d.asaE) asaText += 'E';
+            linha('Classificação', asaText);
+        }
+
+        // 7. Exames
+        titulo('7. EXAMES COMPLEMENTARES');
+        var labs = [];
+        if (d.hb) labs.push('Hb: ' + d.hb);
+        if (d.ht) labs.push('Ht: ' + d.ht);
+        if (d.plaq) labs.push('Plaq: ' + d.plaq);
+        if (d.ureia) labs.push('Ureia: ' + d.ureia);
+        if (d.creat) labs.push('Creat: ' + d.creat);
+        if (d.na) labs.push('Na: ' + d.na);
+        if (d.k) labs.push('K: ' + d.k);
+        if (d.glic) labs.push('Glic: ' + d.glic);
+        if (d.hba1c) labs.push('HbA1c: ' + d.hba1c);
+        if (d.coag) labs.push('Coag: ' + (d.coag === 'N' ? 'Normal' : 'Alterado'));
+        if (labs.length) linhaSimples(labs.join(' | '));
+        
+        // Exames de imagem COM observações
+        var ecgStatus = d.ecg === 'N' ? 'Normal' : (d.ecg === 'A' ? 'Alterado' : '');
+        if (ecgStatus) {
+            var ecgTxt = ecgStatus;
+            if (d.ecg === 'A' && d.ecgObs) ecgTxt += ' - ' + d.ecgObs;
+            linha('ECG', ecgTxt);
+        }
+        var rxStatus = d.rx === 'N' ? 'Normal' : (d.rx === 'A' ? 'Alterado' : '');
+        if (rxStatus) {
+            var rxTxt = rxStatus;
+            if (d.rx === 'A' && d.rxObs) rxTxt += ' - ' + d.rxObs;
+            linha('Rx Tórax', rxTxt);
+        }
+        var ecoStatus = d.eco === 'N' ? 'Normal' : (d.eco === 'A' ? 'Alterado' : '');
+        if (ecoStatus) {
+            var ecoTxt = ecoStatus;
+            if (d.eco === 'A' && d.ecoObs) ecoTxt += ' - ' + d.ecoObs;
+            linha('ECO TT', ecoTxt);
+        }
+        if (d.outrosExames) linha('Outros', d.outrosExames);
+
+        // 8. Jejum
+        titulo('8. JEJUM');
+        if (d.jejum) linha('Tempo', d.jejum);
+        if (d.estCheio) linha('Estômago Cheio', 'Sim');
+
+        // 9. Planejamento
+        titulo('9. PLANEJAMENTO ANESTÉSICO');
+        if (d.tecnica && d.tecnica.length) linha('Técnica', d.tecnica.join(', '));
+        if (d.mpa) linha('MPA', d.mpaDesc || 'Sim');
+
+        // 10. Solicitações
+        titulo('10. SOLICITAÇÕES');
+        if (d.hemo) linha('Hemocomponentes', d.hemoDesc || 'Sim');
+        if (d.avalEquipe) linha('Avaliar equipe cirúrgica', 'Sim');
+        if (d.uti) linha('UTI', 'Solicitado');
+        if (d.ui) linha('UI', 'Solicitado');
+
+        // 11. Liberação
+        titulo('11. LIBERAÇÃO');
+        var libs = { 'L': '✓ LIBERADO para o procedimento', 'R': '⏳ REAVALIAÇÃO necessária', 'S': '✕ SUSPENSO' };
+        if (d.liberacao) {
+            linha('Status', libs[d.liberacao] || d.liberacao);
+            if (d.liberacao === 'R' && d.pendDesc) linha('Pendências', d.pendDesc);
+            if (d.liberacao === 'S' && d.suspDesc) linha('Motivo', d.suspDesc);
+        }
+        if (d.suspMed) linha('Suspender Medicamento', d.suspMedDesc || 'Sim');
+        if (d.orientacoes) linha('Orientações', d.orientacoes);
+        
+        y += 5;
+        checkPage(20);
+        
+        // Assinatura
+        doc.setDrawColor(200);
+        doc.line(lm, y + 15, lm + 80, y + 15);
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        var assinatura = d.medico || '________________________';
+        if (d.crm) assinatura += '\nCRM: ' + d.crm;
+        doc.text(assinatura, lm, y + 20);
+        
+        doc.text('Data: ' + formatarData(d.dataAval), lm + 120, y + 20);
+
+        // Rodapé
+        var pageCount = doc.internal.getNumberOfPages();
+        for (var i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.setTextColor(128);
+            doc.text('UNIANEST - Sistema de Avaliação Pré-Anestésica | Unirio', 105, 290, { align: 'center' });
+            doc.text('Página ' + i + ' de ' + pageCount, 195, 290, { align: 'right' });
+        }
+
+        // Salvar - usando Web Share API para iOS (sem mostrar UUID)
+        var nomeArquivo = 'APA_' + (d.nome || 'paciente').replace(/\s+/g, '_').substring(0, 20) + '.pdf';
+        var pdfBlob = doc.output('blob');
+        var pdfFile = new File([pdfBlob], nomeArquivo, { type: 'application/pdf' });
+
+        // Tentar usar Web Share API (iOS/mobile)
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+            navigator.share({
+                files: [pdfFile],
+                title: 'Avaliação Pré-Anestésica - ' + (d.nome || 'Paciente')
+            }).then(function() {
+                showToast('PDF compartilhado!', 'success');
+            }).catch(function(err) {
+                if (err.name !== 'AbortError') {
+                    doc.save(nomeArquivo);
+                    showToast('PDF salvo!', 'success');
+                }
+            });
+        } else {
+            // Fallback para navegadores sem Web Share
+            doc.save(nomeArquivo);
+            showToast('PDF exportado!', 'success');
+        }
+    }
+
+    // ==================== FUNÇÕES DE TRANSFERÊNCIA ====================
+    
+    function sairParaMenu() {
+        if (confirm('Voltar ao menu principal?')) {
+            window.location.href = 'index.html';
+        }
+    }
+
+    function calcularIdade(dataNasc) {
+        if (!dataNasc) return '';
+        var hoje = new Date();
+        var nasc = new Date(dataNasc);
+        var idade = hoje.getFullYear() - nasc.getFullYear();
+        var m = hoje.getMonth() - nasc.getMonth();
+        if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+        return idade > 0 ? idade.toString() : '';
+    }
+
+    function montarComorbidades(p) {
+        var lista = [];
+        if (p.cardio && p.cardio.length) lista = lista.concat(p.cardio);
+        if (p.resp && p.resp.length) lista = lista.concat(p.resp);
+        if (p.endo && p.endo.length) lista = lista.concat(p.endo);
+        if (p.gi && p.gi.length) lista = lista.concat(p.gi);
+        if (p.neuro && p.neuro.length) lista = lista.concat(p.neuro);
+        if (p.renal && p.renal.length) lista = lista.concat(p.renal);
+        if (p.infec && p.infec.length) lista = lista.concat(p.infec);
+        if (p.hemato && p.hemato.length) lista = lista.concat(p.hemato);
+        if (p.musculo && p.musculo.length) lista = lista.concat(p.musculo);
+        if (p.cancer && p.cancer.length) lista = lista.concat(p.cancer);
+        return lista.length ? lista.join(', ') : '';
+    }
+
+    function buscarPacientePorId(id, callback) {
+        if (!db) { callback(null); return; }
+        var tx = db.transaction(['avaliacoes'], 'readonly');
+        var store = tx.objectStore('avaliacoes');
+        var request = store.get(id);
+        request.onsuccess = function() { callback(request.result); };
+        request.onerror = function() { callback(null); };
+    }
+
+    function enviarParaIntra(id) {
+        buscarPacientePorId(id, function(p) {
+            if (!p) { showToast('Paciente não encontrado', 'error'); return; }
+            
+            // Mapear dados para formato da Ficha Intra
+            var dadosIntra = {
+                destino: 'intra',
+                timestamp: Date.now(),
+                dados: {
+                    nome: p.nome || '',
+                    cpf: p.cpf || '',
+                    dn: p.dataNasc || '',
+                    genero: p.genero || '',
+                    idade: calcularIdade(p.dataNasc),
+                    peso: p.peso || '',
+                    altura: p.altura || '',
+                    alergias: p.alergiaDesc || '',
+                    doencas: montarComorbidades(p),
+                    cirPrevias: p.cirAnt || '',
+                    medicamentos: p.medDesc || '',
+                    mallampati: p.mallampati || '',
+                    asa: p.asa ? ('ASA ' + p.asa + (p.asaE ? 'E' : '')) : '',
+                    cirurgia: p.cirurgia || '',
+                    jejum: p.jejum || ''
+                }
+            };
+            
+            localStorage.setItem('UNIANEST_TRANSFER', JSON.stringify(dadosIntra));
+            showToast('Dados enviados! Abra a Ficha Intra', 'success');
+            
+            if (confirm('Abrir Ficha Intraoperatória agora?')) {
+                window.location.href = 'ficha-intra.html';
+            }
+        });
+    }
+
+    function enviarParaRPA(id) {
+        buscarPacientePorId(id, function(p) {
+            if (!p) { showToast('Paciente não encontrado', 'error'); return; }
+            
+            // Mapear dados para formato do RPA
+            var dadosRPA = {
+                destino: 'rpa',
+                timestamp: Date.now(),
+                dados: {
+                    name: p.nome || '',
+                    age: calcularIdade(p.dataNasc),
+                    record: p.prontuario || '',
+                    surgery: p.cirurgia || '',
+                    anesthesia: p.tecnica && p.tecnica.length ? p.tecnica[0] : ''
+                }
+            };
+            
+            localStorage.setItem('UNIANEST_TRANSFER', JSON.stringify(dadosRPA));
+            showToast('Dados enviados! Abra o RPA', 'success');
+            
+            if (confirm('Abrir Recuperação Pós-Anestésica agora?')) {
+                window.location.href = 'rpa.html';
+            }
+        });
+    }
+
+    // Inicialização automática caso não tenha splash (fallback)
+    document.addEventListener('DOMContentLoaded', function() {
+        // Splash é mostrado por padrão, espera o clique em ENTRAR
+    });
+</script>
+```
+
+</body>
+</html>
